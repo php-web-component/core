@@ -1,0 +1,20 @@
+{
+    "name": "php-web-component/core",
+    "description": "PHP Web Component",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bagus A Priambada",
+            "email": "iam.adty@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "PWC\\": "src/"
+        }
+    },
+    "require": {}
+}
