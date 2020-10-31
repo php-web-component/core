@@ -1,11 +1,6 @@
 <?php namespace PWC;
 
 trait ComponentTrait {
-    public static function build(...$params)
-    {
-        return new self(...$params);
-    }
-
     public function config(array $config = [])
     {
         foreach ($config as $name => $value) {

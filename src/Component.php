@@ -2,14 +2,13 @@
 
 use PWC\Component\Config;
 
-class Component extends Core {
-    protected $children = [];
-
-    protected $config = [];
+class Component {
+    protected $_parent = null;
+    protected $_children = [];
 
     public function __construct(...$children)
     {
-        $this->children = $children;
+        $this->_children = $children;
     }
 
     public function __toString()
@@ -21,8 +20,8 @@ class Component extends Core {
     {
         return implode('', array_map(function($component) {
             return is_a($component, Component::class) ? $component->render() : (is_a($component, Config::class) ? '' : $component);
-        }, $this->children));
+        }, $this->_children));
     }
 
-    use ComponentTrait;
+    use BuilderTrait, ComponentTrait;
 }
