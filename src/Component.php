@@ -1,7 +1,5 @@
 <?php namespace PWC;
 
-use PWC\Component\Config;
-
 class Component {
     protected $_parent = null;
     protected $_children = [];
@@ -19,7 +17,7 @@ class Component {
     public function render()
     {
         return implode('', array_map(function($component) {
-            return is_a($component, Component::class) ? $component->render() : (is_a($component, Config::class) ? '' : $component);
+            return is_a($component, Component::class) ? $component->render() : $component;
         }, $this->_children));
     }
 
