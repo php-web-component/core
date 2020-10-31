@@ -1,27 +1,28 @@
 <?php namespace PWC;
 
+use PWC\Component\Config;
+
 class Component extends Core {
     protected $children = [];
 
-    public function __construct(...$params)
+    protected $config = [];
+
+    public function __construct(...$children)
     {
-        if (is_array($params)) {
-            foreach ($params as $param) {
-                if (is_a($param, Component::class)) {
-                    $this->children[] = $param;
-                }
-            }
-        }
+        $this->children = $children;
+    }
+
+    public function __toString()
+    {
+        return $this->render();
     }
 
     public function render()
     {
-        $result = '';
-
-        foreach ($this->children as $component) {
-            $result .= $component->render();
-        }
-
-        return $result;
+        return implode('', array_map(function($component) {
+            return is_a($component, Component::class) ? $component->render() : (is_a($component, Config::class) ? '' : $component);
+        }, $this->children));
     }
+
+    use ComponentTrait;
 }
