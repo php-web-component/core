@@ -16,5 +16,7 @@
             "PWC\\": "src/"
         }
     },
-    "require": {}
+    "require-dev": {
+        "kint-php/kint": "^3.3"
+    }
 }

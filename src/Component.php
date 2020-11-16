@@ -14,7 +14,7 @@ class Component {
         return $this->render();
     }
 
-    public function render()
+    public function render(): string
     {
         return implode('', array_map(function($component) {
             return is_a($component, Component::class) ? $component->render() : $component;
