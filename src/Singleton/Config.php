@@ -7,29 +7,29 @@ class Config extends \PWC\Singleton
 
     public function get($name = null)
     {
-        if ($this->_isSingleValue) {
-            return $this->value;
+        if (self::instance()->_isSingleValue) {
+            return self::instance()->value;
         } else {
-            return $this->$name;
+            return self::instance()->$name;
         }
     }
 
     public function set($name = null, $value = null)
     {
-        if ($this->_isSingleValue) {
-            $this->value = $name;
+        if (self::instance()->_isSingleValue) {
+            self::instance()->value = $name;
         } else {
-            $this->$name = $value;
+            self::instance()->$name = $value;
         }
     }
 
-    public function init($values = [])
+    public static function init($values = [])
     {
-        if ($this->_isSingleValue) {
-            $this->value = $values;
+        if (self::instance()->_isSingleValue) {
+            self::instance()->value = $values;
         } else {
             foreach ($values as $name => $value) {
-                $this->set($name, $value);
+                self::instance()->set($name, $value);
             }
         }
     }

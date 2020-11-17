@@ -9,6 +9,6 @@ class Config
 
     public static function register($class = '', $value = [])
     {
-        $class::instance()->init($value);
+        $class::init($value);
     }
 }
