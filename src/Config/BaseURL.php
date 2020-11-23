@@ -2,7 +2,7 @@
 
 use PWC\Singleton\Config;
 
-class RootDir extends Config
+class BaseURL extends Config
 {
     protected $_isSingleValue = true;
 }

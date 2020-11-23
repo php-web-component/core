@@ -1,11 +1,16 @@
 <?php namespace PWC;
 
-trait ComponentTrait {
-    public function config(array $config = [])
+trait ComponentTrait
+{
+    public function config($config)
     {
-        foreach ($config as $name => $value) {
-            if (property_exists(self::class, $name)) {
-                $this->{$name} = $value;
+        if (!is_null($config)) {
+            if (is_array($config)) {
+                foreach ($config as $name => $value) {
+                    if (property_exists($this, $name)) {
+                        $this->{$name} = $value;
+                    }
+                }
             }
         }
 

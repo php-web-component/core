@@ -18,5 +18,15 @@
     },
     "require-dev": {
         "kint-php/kint": "^3.3"
-    }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://localhost/satis"
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
 }

@@ -1,11 +1,13 @@
 <?php namespace PWC\Singleton;
 
-class Config extends \PWC\Singleton
+use PWC\Singleton;
+
+class Config extends Singleton
 {
     protected $_isSingleValue = false;
     protected $value = null;
 
-    public function get($name = null)
+    public static function get($name = null)
     {
         if (self::instance()->_isSingleValue) {
             return self::instance()->value;
@@ -14,12 +16,39 @@ class Config extends \PWC\Singleton
         }
     }
 
-    public function set($name = null, $value = null)
+    public static function set($name = null, $value = null)
     {
         if (self::instance()->_isSingleValue) {
             self::instance()->value = $name;
         } else {
             self::instance()->$name = $value;
+        }
+    }
+
+    public static function add($name = null, $value = null, $first = false)
+    {
+        if (self::instance()->_isSingleValue) {
+            self::instance()->value = $name;
+        } else {
+            if (is_array(self::instance()->$name)) {
+                $exists = false;
+                array_walk(self::instance()->$name, function ($a) use (&$exists, $value) {
+                    if ($value == $a) {
+                        $exists = true;
+                    }
+                });
+                if (!$exists) {
+                    if ($first) {
+                        self::instance()->set($name, array_merge([$value], self::instance()->$name));
+                    } else {
+                        self::instance()->set($name, array_merge(self::instance()->$name, [$value]));
+                    }
+                }
+            } elseif (is_string(self::instance()->$name)) {
+
+            } elseif (is_numeric(self::instance()->$name)) {
+
+            }
         }
     }
 
