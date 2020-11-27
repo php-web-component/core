@@ -1,6 +1,6 @@
 {
     "name": "php-web-component/core",
-    "description": "PHP Web Component",
+    "description": "PHP Web Component Core",
     "type": "library",
     "license": "MIT",
     "authors": [
