@@ -4,12 +4,12 @@ use PWC\Singleton;
 
 class Config extends Singleton
 {
-    protected $_isSingleValue = false;
+    protected $isSingleValue = false;
     protected $value = null;
 
     public static function get($name = null)
     {
-        if (self::instance()->_isSingleValue) {
+        if (self::instance()->isSingleValue) {
             return self::instance()->value;
         } else {
             return self::instance()->$name;
@@ -18,7 +18,7 @@ class Config extends Singleton
 
     public static function set($name = null, $value = null)
     {
-        if (self::instance()->_isSingleValue) {
+        if (self::instance()->isSingleValue) {
             self::instance()->value = $name;
         } else {
             self::instance()->$name = $value;
@@ -27,7 +27,7 @@ class Config extends Singleton
 
     public static function add($name = null, $value = null, $first = false)
     {
-        if (self::instance()->_isSingleValue) {
+        if (self::instance()->isSingleValue) {
             self::instance()->value = $name;
         } else {
             if (is_array(self::instance()->$name)) {
@@ -54,7 +54,7 @@ class Config extends Singleton
 
     public static function init($values = [])
     {
-        if (self::instance()->_isSingleValue) {
+        if (self::instance()->isSingleValue) {
             self::instance()->value = $values;
         } else {
             foreach ($values as $name => $value) {

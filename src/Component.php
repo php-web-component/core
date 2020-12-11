@@ -1,15 +1,15 @@
 <?php namespace PWC;
 
+use PWC\Component\BuilderTrait;
+use PWC\Component\ComponentTrait;
 use PWC\Component\Decorator;
 use PWC\Component\Decorator\Collection as DecoratorCollection;
 
 class Component
 {
-    protected $_ID = 'pwc-component';
-    protected $_parent = null;
-    protected $_children = [];
-
-    protected DecoratorCollection $_decorators;
+    protected $parent = null;
+    protected $children = [];
+    protected DecoratorCollection $decoratorCollection;
 
     public function __construct(...$params)
     {
@@ -56,8 +56,8 @@ class Component
             }
         }
 
-        $this->_children = $children;
-        $this->_decorators->set(array_merge($this->_decorators->get(), $decorators));
+        $this->children = $children;
+        $this->decoratorCollection->set(array_merge($this->decoratorCollection->get(), $decorators));
 
         $this->init();
     }
@@ -65,9 +65,9 @@ class Component
     protected function init()
     {}
 
-    protected function _setParent(Component $component)
+    protected function setParent(Component $component)
     {
-        $this->_parent = $component;
+        $this->parent = $component;
         return $this;
     }
 
@@ -85,30 +85,32 @@ class Component
     {
         return implode('', array_map(function($component) {
             if (is_a($component, Component::class)) {
-                return $component->_setParent($this)->__mergeChildAndDecorator();
+                return (string) $component->setParent($this)->__mergeChildAndDecorator();
             } elseif (is_callable($component)) {
                 return (string) $component();
             } else {
                 return (string) $component;
             }
-        }, $this->_children));
+        }, $this->children));
     }
 
-    private function __mergeChildAndDecorator()
+    protected function __mergeChildAndDecorator()
     {
-        $this->_children = array_merge($this->_decorators->get(), $this->_children);
+        $this->children = array_merge($this->decoratorCollection->get(), $this->children);
         return $this;
     }
 
-    public function withDecorators(?DecoratorCollection $collection)
+    public function withDecorator(?DecoratorCollection $collection)
     {
-        $decorator = $collection->find(get_class($this));
-        if (!is_null($decorator)) {
-            $component = $decorator->getComponent();
-            if ($decorator->isReplacement()) {
-                return $component;
-            } else {
-                $this->_decorate($component);
+        if (!is_null($collection)) {
+            $decorator = $collection->find(get_class($this));
+            if (!is_null($decorator)) {
+                $component = $decorator->getComponent();
+                if ($decorator->isReplacement()) {
+                    return $component;
+                } else {
+                    $this->_decorate($component);
+                }
             }
         }
 
@@ -117,7 +119,7 @@ class Component
 
     public function getChildren()
     {
-        return $this->_children;
+        return $this->children;
     }
 
     public function asDecorator()
@@ -127,7 +129,7 @@ class Component
 
     protected function _decorate($component)
     {
-        $this->_children = array_merge($this->_children, $component->_children);
+        $this->children = array_merge($this->children, $component->getChildren());
     }
 
     use BuilderTrait, ComponentTrait, ReflectionTrait;

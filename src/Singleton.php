@@ -3,7 +3,7 @@
 use Exception;
 
 class Singleton {
-    private static $__instances = [];
+    private static $instances = [];
 
     protected function __construct()
     {}
@@ -19,14 +19,14 @@ class Singleton {
     public static function instance()
     {
         $class = static::class;
-        if (!isset(self::$__instances[$class])) {
-            self::$__instances[$class] = new static();
+        if (!isset(self::$instances[$class])) {
+            self::$instances[$class] = new static();
 
-            if (method_exists(self::$__instances[$class], '__setDefaultValue')) {
-                self::$__instances[$class]->__setDefaultValue();
+            if (method_exists(self::$instances[$class], 'setDefaultValue')) {
+                self::$instances[$class]->setDefaultValue();
             }
         }
 
-        return self::$__instances[$class];
+        return self::$instances[$class];
     }
 }

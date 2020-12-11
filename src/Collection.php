@@ -2,18 +2,18 @@
 
 class Collection
 {
-    public static $_type = null;
-    protected array $_values = [];
+    public static $type = null;
+    protected array $values = [];
 
     public function get(): array
     {
-        return $this->_values;
+        return $this->values;
     }
 
     public function set(array $values = [])
     {
         if (is_array($values)) {
-            $this->_values = $values;
+            $this->values = $values;
         }
 
         return $this;
@@ -21,10 +21,10 @@ class Collection
 
     public function push($value = null)
     {
-        if (!is_null(static::$_type)) {
+        if (!is_null(static::$type)) {
             if (is_object($value)) {
-                if (get_class($value) == static::$_type) {
-                    $this->_values[] = $value;
+                if (get_class($value) == static::$type) {
+                    $this->values[] = $value;
                 }
             }
         }
@@ -34,7 +34,7 @@ class Collection
     {
         $class = null;
         $num = null;
-        foreach ($this->_values as $key => $value) {
+        foreach ($this->values as $key => $value) {
             if (get_class($value->getComponent()) == $type) {
                 $class = $value;
                 $num = $key;
@@ -44,7 +44,7 @@ class Collection
 
         if (!$keep) {
             if (!is_null($num)) {
-                unset($this->_values[$num]);
+                unset($this->values[$num]);
             }
         }
 

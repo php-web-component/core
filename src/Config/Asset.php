@@ -6,7 +6,7 @@ class Asset extends Config
 {
     protected $dir;
 
-    public function __setDefaultValue()
+    public function setDefaultValue()
     {
         if (!is_null(Application::get('rootDir'))) {
             $composerJsonFile = Application::get('rootDir') . '/composer.json';

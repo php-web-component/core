@@ -4,38 +4,43 @@ use PWC\Component;
 
 class Decorator
 {
-    protected Component $_component;
-    protected bool $_isReplacement = false;
+    protected Component $component;
+    protected bool $isReplacement = false;
 
     public function __construct(Component $component)
     {
-        $this->_component = $component;
+        $this->component = $component;
     }
 
     public function setComponent(Component $component)
     {
-        $this->_component = $component;
+        $this->component = $component;
         return $this;
     }
 
     public function getComponent()
     {
-        return $this->_component;
+        return $this->component;
     }
 
     public function replace()
     {
-        $this->_isReplacement = true;
+        $this->isReplacement = true;
         return $this;
     }
 
     public function isReplacement()
     {
-        return $this->_isReplacement;
+        return $this->isReplacement;
     }
 
     public function __toString()
     {
         return '';
+    }
+
+    public function decorate() : Component
+    {
+        return $this->component;
     }
 }

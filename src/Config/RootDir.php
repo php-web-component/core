@@ -4,5 +4,5 @@ use PWC\Singleton\Config;
 
 class RootDir extends Config
 {
-    protected $_isSingleValue = true;
+    protected $isSingleValue = true;
 }

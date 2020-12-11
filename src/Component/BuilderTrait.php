@@ -1,4 +1,4 @@
-<?php namespace PWC;
+<?php namespace PWC\Component;
 
 trait BuilderTrait
 {
