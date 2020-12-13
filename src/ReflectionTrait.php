@@ -4,21 +4,21 @@ use ReflectionClass;
 
 trait ReflectionTrait
 {
-    protected $ref = null;
+    protected $_ref = null;
 
-    protected function initRef()
+    protected function _initRef()
     {
-        $this->ref = new ReflectionClass($this);
+        $this->_ref = new ReflectionClass($this);
     }
 
-    protected function getRef()
+    protected function _getRef()
     {
-        return $this->ref ?? new ReflectionClass($this);
+        return $this->_ref ?? new ReflectionClass($this);
     }
 
-    protected function initProperties()
+    protected function _initProperties()
     {
-        foreach ($this->ref->getProperties() as $prop) {
+        foreach ($this->_ref->getProperties() as $prop) {
             $access = false;
             if ($prop->isProtected() || $prop->isPrivate()) {
                 $access = true;

@@ -1,22 +1,26 @@
 <?php namespace PWC\Component;
 
+use PWC\Component\Property\BuilderTrait;
+
 class Property
 {
-    protected $value = null;
+    use BuilderTrait;
+
+    protected $_value = null;
 
     public function __construct($value = null)
     {
-        $this->value =  $value;
+        $this->_value = $value;
     }
 
-    public function setValue($value = null)
+    public function set($value = null)
     {
-        $this->value = $value;
+        $this->_value = $value;
         return $this;
     }
 
-    public function getValue()
+    public function get()
     {
-        return $this->value;
+        return $this->_value;
     }
 }

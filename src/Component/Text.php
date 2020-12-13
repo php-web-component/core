@@ -5,21 +5,27 @@ use PWC\Component\Text\Separator;
 
 class Text extends Component
 {
-    protected ?Separator $separator;
+    use BuilderTrait;
+
+    public ?Separator $_separator;
 
     public function render(): string
     {
         $separator = '';
-        if (!is_null($this->separator)) {
-            $separator = $this->separator->getValue() ?? '';
+        if (!is_null($this->_separator)) {
+            $separator = $this->_separator->get() ?? '';
         }
 
-        return (string) implode($separator, array_map(function ($value) {
-            if (is_bool($value) || is_string($value) || is_int($value) || is_float($value)) {
-                return (string) $value;
+        return implode($separator, array_map(function($child) {
+            if (is_object($child)) {
+                if (method_exists($child, '__toString')) {
+                    return (string) $child;
+                }
+            } else {
+                if (!is_array($child)) {
+                    return (string) $child;
+                }
             }
-        }, $this->children));
+        }, $this->_children));
     }
-
-    use BuilderTrait;
 }

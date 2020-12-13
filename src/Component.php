@@ -1,136 +1,97 @@
 <?php namespace PWC;
 
 use PWC\Component\BuilderTrait;
-use PWC\Component\ComponentTrait;
-use PWC\Component\Decorator;
-use PWC\Component\Decorator\Collection as DecoratorCollection;
 
 class Component
 {
-    protected $parent = null;
-    protected $children = [];
-    protected DecoratorCollection $decoratorCollection;
+    use ReflectionTrait, BuilderTrait;
 
-    public function __construct(...$params)
+    protected $_children = [];
+
+    public function __construct(array $params)
     {
-        $this->initRef();
-        $this->initProperties();
+        $this->_initRef();
+        $this->_initProperties($params);
 
         $children = [];
-        $decorators = [];
-        foreach ($params as $param) {
-            if (is_a($param, Decorator::class)) {
-                $decorators[] = $param;
-            } else {
-                $found = false;
-                if (is_object($param)) {
-                    foreach ($this->getRef()->getProperties() as $prop) {
-                        if (!is_null($prop->getType())) {
-                            if (!$prop->getType()->isBuiltin()) {
-                                if (is_subclass_of($prop->getType()->getName(), Collection::class)) {
-                                    $paramType = $this->{$prop->getName()}::$_type;
-                                } else {
-                                    $paramType = $prop->getType()->getName();
-                                }
-
-                                if (get_class($param) == $paramType) {
-                                    if (is_subclass_of($prop->getType()->getName(), Collection::class)) {
-                                        $this->{$prop->getName()}->push($param);
-                                    } else {
-                                        $this->{$prop->getName()} = $param;
-                                    }
-                                    $found = true;
-
-                                    break;
-                                }
-                            }
-                        }
-                    }
+        foreach ($params as $component => $values) {
+            if (is_subclass_of($component, Component::class)) {
+                if (is_callable($values)) {
+                    $values = $values();
                 }
 
-                if (!$found) {
-                    if (!is_null($param)) {
-                        $children[] = $param;
+                if (!is_array($values)) {
+                    $values = [$values];
+                }
+
+                $x = $component::build($values);
+            } elseif (is_object($values) && is_a($values, Component::class)) {
+                $x = $values;
+            } elseif (!is_object($values) && is_subclass_of($values, Component::class)) {
+                $x = $values::build([]);
+            } else {
+                $x = $values;
+            }
+
+            if (is_object($x)) {
+                if (!$this->_checkComponentProperty($x)) {
+                    $children[] = $x;
+                }
+            } else {
+                $children[] = $x;
+            }
+        }
+
+        $this->_children = $children;
+
+        $this->_init();
+    }
+
+    protected function _init()
+    {}
+
+    protected function _checkComponentProperty($component)
+    {
+        $found = false;
+        foreach ($this->_getRef()->getProperties() as $prop) {
+            if (!is_null($prop->getType())) {
+                if (!$prop->getType()->isBuiltin()) {
+                    $collection = false;
+                    $includeSubClass = false;
+                    if (is_subclass_of($prop->getType()->getName(), Collection::class)) {
+                        $paramType = $this->{$prop->getName()}::$type;
+                        $includeSubClass = $this->{$prop->getName()}::$includeSubClass;
+                        $collection = true;
+                    } else {
+                        $paramType = $prop->getType()->getName();
+                    }
+
+                    if ((get_class($component) == $paramType || ($collection && is_subclass_of(get_class($component), $paramType) && $includeSubClass)) && $prop->isPublic()) {
+                        if (is_subclass_of($prop->getType()->getName(), Collection::class)) {
+                            $this->{$prop->getName()}->push($component);
+                        } else {
+                            $this->{$prop->getName()} = $component;
+                        }
+                        $found = true;
+
+                        break;
                     }
                 }
             }
         }
 
-        $this->children = $children;
-        $this->decoratorCollection->set(array_merge($this->decoratorCollection->get(), $decorators));
-
-        $this->init();
+        return $found;
     }
 
-    protected function init()
-    {}
-
-    protected function setParent(Component $component)
+    public function render(): string
     {
-        $this->parent = $component;
-        return $this;
+        return implode('', array_map(function ($component) {
+            return (string) $component;
+        }, $this->_children));
     }
 
     public function __toString()
     {
         return $this->render();
     }
-
-    /**
-     * Render component
-     *
-     * @return string
-     */
-    public function render(): string
-    {
-        return implode('', array_map(function($component) {
-            if (is_a($component, Component::class)) {
-                return (string) $component->setParent($this)->__mergeChildAndDecorator();
-            } elseif (is_callable($component)) {
-                return (string) $component();
-            } else {
-                return (string) $component;
-            }
-        }, $this->children));
-    }
-
-    protected function __mergeChildAndDecorator()
-    {
-        $this->children = array_merge($this->decoratorCollection->get(), $this->children);
-        return $this;
-    }
-
-    public function withDecorator(?DecoratorCollection $collection)
-    {
-        if (!is_null($collection)) {
-            $decorator = $collection->find(get_class($this));
-            if (!is_null($decorator)) {
-                $component = $decorator->getComponent();
-                if ($decorator->isReplacement()) {
-                    return $component;
-                } else {
-                    $this->_decorate($component);
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    public function getChildren()
-    {
-        return $this->children;
-    }
-
-    public function asDecorator()
-    {
-        return new Decorator($this);
-    }
-
-    protected function _decorate($component)
-    {
-        $this->children = array_merge($this->children, $component->getChildren());
-    }
-
-    use BuilderTrait, ComponentTrait, ReflectionTrait;
 }

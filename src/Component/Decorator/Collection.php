@@ -5,5 +5,5 @@ use PWC\Component\Decorator;
 
 class Collection extends PWCCollection
 {
-    public static $_type = Decorator::class;
+    public static $type = Decorator::class;
 }
