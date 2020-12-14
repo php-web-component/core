@@ -1,6 +1,7 @@
 <?php namespace PWC;
 
 use PWC\Component\BuilderTrait;
+use PWC\Component\Property;
 
 class Component
 {
@@ -8,41 +9,64 @@ class Component
 
     protected $_children = [];
 
-    public function __construct(array $params)
+    public function __construct($params = null)
     {
         $this->_initRef();
-        $this->_initProperties($params);
+        $this->_initProperties();
 
-        $children = [];
-        foreach ($params as $component => $values) {
-            if (is_subclass_of($component, Component::class)) {
-                if (is_callable($values)) {
-                    $values = $values();
+        if (!is_null($params)) {
+            $params = is_array($params) ? $params : [$params];
+            $children = [];
+            foreach ($params as $component => $values) {
+                $prop = null;
+                if (is_subclass_of($component, Component::class)) {
+                    if (is_callable($values)) {
+                        $values = $values();
+                    }
+    
+                    if (!is_array($values)) {
+                        $values = [$values];
+                    }
+    
+                    $child = $component::build($values);
+                } elseif (is_subclass_of($component, Property::class)) {
+                    $child = $component::build($values);
+                } elseif (is_object($values) && is_a($values, Component::class)) {
+                    $prop = $component;
+                    $child = $values;
+                }  elseif (is_object($values) && is_a($values, Property::class)) {
+                    $prop = $component;
+                    $child = $values;
+                } elseif (!is_object($values) && is_subclass_of($values, Component::class)) {
+                    $prop = $component;
+                    $child = $values::build();
+                } elseif (!is_object($values) && is_subclass_of($values, Property::class)) {
+                    $prop = $component;
+                    $child = $values::build();
+                } else {
+                    $prop = $component;
+                    $child = $values;
                 }
-
-                if (!is_array($values)) {
-                    $values = [$values];
+    
+                if (is_object($child)) {
+                    if (!$this->_checkComponentProperty($child, $prop)) {
+                        $children[] = $child;
+                    }
+                } else {
+                    if (!is_null($prop)) {
+                        if (property_exists($this, $prop)) {
+                            $this->{$prop} = $child;
+                        } else {
+                            $children[] = $child;
+                        }
+                    } else {
+                        $children[] = $child;
+                    }
                 }
-
-                $x = $component::build($values);
-            } elseif (is_object($values) && is_a($values, Component::class)) {
-                $x = $values;
-            } elseif (!is_object($values) && is_subclass_of($values, Component::class)) {
-                $x = $values::build([]);
-            } else {
-                $x = $values;
             }
-
-            if (is_object($x)) {
-                if (!$this->_checkComponentProperty($x)) {
-                    $children[] = $x;
-                }
-            } else {
-                $children[] = $x;
-            }
+    
+            $this->_children = $children;
         }
-
-        $this->_children = $children;
 
         $this->_init();
     }
@@ -50,9 +74,17 @@ class Component
     protected function _init()
     {}
 
-    protected function _checkComponentProperty($component)
+    protected function _checkComponentProperty($component, $prop = null)
     {
         $found = false;
+
+        if (!is_null($prop)) {
+            if (property_exists($this, $prop)) {
+                $this->{$prop} = $component;
+                return true;
+            }
+        }
+
         foreach ($this->_getRef()->getProperties() as $prop) {
             if (!is_null($prop->getType())) {
                 if (!$prop->getType()->isBuiltin()) {

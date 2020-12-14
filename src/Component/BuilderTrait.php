@@ -2,7 +2,7 @@
 
 trait BuilderTrait
 {
-    public static function build(array $params)
+    public static function build($params = null)
     {
         return new self($params);
     }
