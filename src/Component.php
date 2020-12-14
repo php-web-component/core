@@ -27,7 +27,7 @@ class Component
                     if (!is_array($values)) {
                         $values = [$values];
                     }
-    
+
                     $child = $component::build($values);
                 } elseif (is_subclass_of($component, Property::class)) {
                     $child = $component::build($values);
@@ -57,14 +57,14 @@ class Component
                         if (property_exists($this, $prop)) {
                             $this->{$prop} = $child;
                         } else {
-                            $children[] = $child;
+                            $children[$prop] = $child;
                         }
                     } else {
                         $children[] = $child;
                     }
                 }
             }
-    
+
             $this->_children = $children;
         }
 

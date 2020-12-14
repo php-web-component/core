@@ -31,22 +31,24 @@ class Collection
         }
     }
 
-    public function find($type = null, $keep = false)
+    public function pull($object)
     {
         $class = null;
         $num = null;
+
+        $type = is_object($object) ? get_class($object) : $object;
+
         foreach ($this->_values as $key => $value) {
-            if (get_class($value->getComponent()) == $type) {
-                $class = $value;
+            if (get_class($value) == $type) {
                 $num = $key;
+                $class = $value;
                 break;
             }
         }
 
-        if (!$keep) {
-            if (!is_null($num)) {
-                unset($this->_values[$num]);
-            }
+        if (!is_null($num)) {
+            unset($this->_values[$num]);
+            $this->_values = array_values($this->_values);
         }
 
         return $class;
