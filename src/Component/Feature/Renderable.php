@@ -19,7 +19,7 @@ trait Renderable
     {
         return implode($separator, array_map(function (mixed $item) use ($separator) {
             if (is_array($item)) {
-                return $this->renderWithSeparator($separator, ...$item);
+                return $this->_render($separator, ...$item);
             } else {
                 if (settype($item, 'string')) {
                     return strval($item);

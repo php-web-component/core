@@ -1,6 +1,7 @@
 {
     "name": "php-web-component/core",
     "description": "PHP Web Component Core",
+    "version": "0.0.1",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -20,12 +21,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "franzl/studio": "^0.16.0",
         "pestphp/pest": "^2.34"
     },
     "config": {
         "allow-plugins": {
-            "franzl/studio": true,
             "pestphp/pest-plugin": true
         }
     },
