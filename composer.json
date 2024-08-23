@@ -1,0 +1,35 @@
+{
+    "name": "php-web-component/core",
+    "description": "PHP Web Component Core",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "PhpWebComponent\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Tyrant No Code",
+            "email": "tyrant.no.code@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "franzl/studio": "^0.16.0",
+        "pestphp/pest": "^2.34"
+    },
+    "config": {
+        "allow-plugins": {
+            "franzl/studio": true,
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require": {
+        "sebastian/type": "^4.0"
+    }
+}
